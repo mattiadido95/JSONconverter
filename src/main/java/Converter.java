@@ -1,24 +1,19 @@
 
 import java.io.FileWriter;
 import java.io.IOException;
-
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
-
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
 
 public class Converter {
     public static void main(String args[]) {
         JSONArray array = new JSONArray();
         try {
-            List<String> allLines = Files.readAllLines(Paths.get("amazon-meta.txt"));
+            List<String> allLines = Files.readAllLines(Paths.get("../amazon-meta.txt"));
             for (String line : allLines) {
                 if (line.indexOf("Id:") != -1) {
-
                     System.out.println(line);
                     int index = allLines.indexOf(line);
                     if (line.equals("Id:   200")) {
