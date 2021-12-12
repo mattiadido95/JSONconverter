@@ -20,4 +20,29 @@ ASIN: 0738700797
     2003-11-25  cutomer: A3IGHTES8ME05L  rating: 5  votes:   5  helpful:   5
     2004-2-11  cutomer: A1CP26N8RHYVVO  rating: 1  votes:  13  helpful:   9
     2005-2-7  cutomer:  ANEIANH0WAT9D  rating: 5  votes:   1  helpful:   1
-	
+
+Id:   53
+ASIN: 0944708498
+  title: Baby Boomer Retirement: 65 Simple Ways to Protect Your Future
+  group: Book
+  salesrank: 566643
+  similar: 0
+  categories: 7
+   |Books[283155]|Subjects[1000]|Business & Investing[3]|General[2612]
+   |Books[283155]|Subjects[1000]|Business & Investing[3]|Personal Finance[2717]|Financial Planning[2721]
+   |Books[283155]|Subjects[1000]|Business & Investing[3]|Personal Finance[2717]|Retirement Planning[2731]
+   |Books[283155]|Subjects[1000]|Parenting & Families[20]|Aging Parents[11352]|Retirement Planning[11360]
+   |[265523]|Amazon.com Stores[285080]|Home & Office[764512]|Business & Investing Books[767740]|General[767880]
+   |[265523]|Amazon.com Stores[285080]|Home & Office[764512]|Business & Investing Books[767740]|Personal Finance[768056]|Financial Planning[768062]
+   |[265523]|Amazon.com Stores[285080]|Home & Office[764512]|Business & Investing Books[767740]|Personal Finance[768056]|Retirement Planning[768068]
+  reviews: total: 1  downloaded: 1  avg rating: 5
+    2000-4-4  cutomer: A2MENII2EKMCQZ  rating: 5  votes:   2  helpful:   2
+
+Id:   88
+ASIN: 039802278X
+  title: Normal and Abnormal Development: The Influence of Primitive Reflexes on Motor Development
+  group: Book
+  salesrank: 353149
+  similar: 0
+  categories: 0
+  reviews: total: 0  downloaded: 0  avg rating: 0
