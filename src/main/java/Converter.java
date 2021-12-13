@@ -1,8 +1,10 @@
 
 import java.io.FileWriter;
 import java.io.IOException;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -14,29 +16,34 @@ public class Converter {
             List<String> allLines = Files.readAllLines(Paths.get("../amazon-meta.txt"));
             for (String line : allLines) {
                 if (line.indexOf("Id:") != -1) {
+                    JSONObject elem = new JSONObject();
                     System.out.println(line);
                     int index = allLines.indexOf(line);
-                    if (line.equals("Id:   200")) {
+                    if (line.equals("Id:   1000")) {
                         break;
                     }
 
                     String exitString = allLines.get(index + 2);
-                    if (exitString.equals("  discontinued product") ) {
-                        System.out.println("stringa di errore"+" "+exitString);
+                    if (exitString.equals("  discontinued product")) {
+                        System.out.println("stringa di errore" + " " + exitString);
+                        continue;
+                    }
+
+                    String group = allLines.get(index + 3);
+                    String[] groupSplit = group.split("group: ");
+                    if (groupSplit[1].equals("Book")) {
+                        elem.put("group", groupSplit[1]);
+                    } else {
+                        System.out.println("trovato un non libro");
                         continue;
                     }
 
                     String[] parts = line.split(":   ");
-                    JSONObject elem = new JSONObject();
                     elem.put("id", parts[1]);
 
                     String title = allLines.get(index + 2);
                     String[] titleSplit = title.split("title: ");
                     elem.put("title", titleSplit[1]);
-
-                    String group = allLines.get(index + 3);
-                    String[] groupSplit = group.split("group: ");
-                    elem.put("group", groupSplit[1]);
 
                     String similar = allLines.get(index + 5);
                     String[] similarSplit = similar.split("similar: ");
@@ -85,6 +92,7 @@ public class Converter {
             FileWriter file = new FileWriter("output.json");
             file.write(array.toJSONString());
             file.close();
+            System.out.println("elementi inseriti nel JSON: " + array.size());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
