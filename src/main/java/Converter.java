@@ -19,8 +19,6 @@ import java.util.zip.GZIPInputStream;
 public class Converter {
 
     private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String GET_URL = "https://www.amazon.in/s?k=0827229534&ref=hp_aps_search";
-
 
     public static void Convert() {
         JSONArray array = new JSONArray();
@@ -31,7 +29,7 @@ public class Converter {
                     JSONObject elem = new JSONObject();
                     System.out.println(line);
                     int index = allLines.indexOf(line);
-                    if (line.equals("Id:   300")) {
+                    if (line.equals("Id:   100")) {
                         break;
                     }
 
@@ -48,6 +46,8 @@ public class Converter {
 
                         String asin = allLines.get(index + 1);
                         String[] asinSplit = asin.split("ASIN: ");
+                        elem.put("ASIN", asinSplit[1]);
+
                         String author = Scrape(asinSplit[1]);
                         elem.put("author", author);
                     } else {
@@ -137,10 +137,13 @@ public class Converter {
             }
             response.append((char) ch);
         }
+
         //System.out.println(response);
+
         String str = response.toString();
         String result = StringUtils.substringBetween(str, "<span class=\"a-size-base\">by </span>", "</div>");
-        System.out.println("risultato prima botta \n" + result);
+        System.out.println("risultato primo parsing \n" + result);
+
         if (StringUtils.substringBetween(result, ">", "</a>") != null) {
             if (StringUtils.substringBetween(result, ">", "</a>").contains("<")) {
                 String app[] = StringUtils.substringBetween(result, ">", "</a>").split("<");
@@ -166,7 +169,6 @@ public class Converter {
 
     public static void main(String[] args) throws IOException {
         Convert();
-        //Scrape();
     }
 
 
