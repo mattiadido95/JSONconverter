@@ -2,6 +2,7 @@
 import java.awt.image.Kernel;
 import java.io.*;
 
+import com.github.javafaker.Faker;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.apache.commons.lang3.StringUtils;
@@ -86,9 +87,11 @@ public class Converter {
                     // DESCRIPTION
                     book.put("description","");
 
-//                    // AUTHOR
-//                    String author = Scrape(asinSplit[1]);
-//                    book.put("author", author);
+                    // AUTHOR
+                    String author = Scrape(asinSplit[1]);
+                    JSONArray authors = new JSONArray();
+                    authors.add(author);
+                    book.put("author", authors);
 
                     // TITLE
                     String title = allLines.get(index + 2);
@@ -268,9 +271,15 @@ public class Converter {
                 System.out.println(StringUtils.substringBetween(result, ">", "</span>"));
                 return StringUtils.substringBetween(result, ">", "</span>");
             }
+        } else {
+            // ci va un nome generato randomicamente
+            Faker faker = new Faker();
+            String name = faker.name().fullName();
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            return name + lastName;
         }
 
-        return "";
     }
 
     public static void main(String[] args) throws IOException {
