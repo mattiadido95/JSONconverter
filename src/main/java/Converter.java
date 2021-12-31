@@ -166,29 +166,34 @@ public class Converter {
                     String[] app = reviewsSplit[1].split(": ");
                     String[] countReview = app[1].split("  ");
                     int rev = Integer.parseInt(countReview[0]);
+
 //                    book.put("count_reviews", rev);
                     JSONArray reviewsList = new JSONArray();
                     if (rev > 0) {
                         for (int i = 1; i <= rev; i++) {
-                            String reviewExtracted = allLines.get(index + 6 + cat + i + 1);
-                            JSONObject review = new JSONObject();
 
-                            String data = StringUtils.substringBetween(reviewExtracted, "", "cutomer").replaceAll(" ", "");
-                            String cutomer = StringUtils.substringBetween(reviewExtracted, "cutomer:", "rating").replaceAll(" ", "");
-                            String rating = StringUtils.substringBetween(reviewExtracted, "rating:", "votes").replaceAll(" ", "");
-                            String votes = StringUtils.substringBetween(reviewExtracted, "votes:", "helpful").replaceAll(" ", "");
+                            String reviewExtracted = allLines.get(index + 6 + cat + i + 1);
+                            if(reviewExtracted.contains("cutomer:")) {
+                                JSONObject review = new JSONObject();
+
+                                String data = StringUtils.substringBetween(reviewExtracted, "", "cutomer").replaceAll(" ", "");
+                                String cutomer = StringUtils.substringBetween(reviewExtracted, "cutomer:", "rating").replaceAll(" ", "");
+                                String rating = StringUtils.substringBetween(reviewExtracted, "rating:", "votes").replaceAll(" ", "");
+                                String votes = StringUtils.substringBetween(reviewExtracted, "votes:", "helpful").replaceAll(" ", "");
 //                            String helpfulSplit[] = reviewExtracted.split("helpful: ");
 
-                            review.put("date_added", data);
-                            review.put("date_updated", data);
-                            review.put("review_id", cutomer + "_" + asinSplit[1]);
-                            review.put("rating", rating);
-                            review.put("n_votes", votes);
-                            review.put("review_text", "");
-                            review.put("user_id", "");
-                            //review.put("helpful", helpfulSplit[1].replaceAll(" ",""));
+                                review.put("date_added", data);
+                                review.put("date_updated", data);
+                                review.put("review_id", cutomer + "_" + asinSplit[1]);
+                                review.put("rating", rating);
+                                review.put("n_votes", votes);
+                                review.put("review_text", "");
+                                review.put("user_id", "");
+                                //review.put("helpful", helpfulSplit[1].replaceAll(" ",""));
 
-                            reviewsList.add(review);
+                                reviewsList.add(review);
+                            }
+
                         }
                         book.put("reviews", reviewsList);
                     } else {
