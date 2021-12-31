@@ -30,7 +30,7 @@ public class Converter {
                     JSONObject book = new JSONObject();
                     System.out.println(line);
                     int index = allLines.indexOf(line);
-                    if (line.equals("Id:   100")) {
+                    if (line.equals("Id:   10000")) {
                         break;
                     }
 
@@ -70,28 +70,30 @@ public class Converter {
                     book.put("num_pages", "");
 
                     // PUB YEAR
-                    book.put("publication_year","");
+                    book.put("publication_year", "");
 
                     // PUB MONTH
-                    book.put("publication_month","");
+                    book.put("publication_month", "");
 
                     // PUB DAY
-                    book.put("publication_day","");
+                    book.put("publication_day", "");
 
                     // RATING COUNT
-                    book.put("rating_count","");
-
-                    // IMAGE URL
-                    book.put("image_url","");
+                    book.put("rating_count", "");
 
                     // DESCRIPTION
-                    book.put("description","");
+                    book.put("description", "");
+
+                    String author_imgURL = Scrape(asinSplit[1]);
 
                     // AUTHOR
-                    String author = Scrape(asinSplit[1]);
+                    String a[] = author_imgURL.split("___");
                     JSONArray authors = new JSONArray();
-                    authors.add(author);
+                    authors.add(a[0]);
                     book.put("author", authors);
+
+                    // IMAGE URL
+                    book.put("image_url", a[1]);
 
                     // TITLE
                     String title = allLines.get(index + 2);
@@ -179,7 +181,7 @@ public class Converter {
 
                             review.put("date_added", data);
                             review.put("date_updated", data);
-                            review.put("review_id", cutomer + "_" + asin);
+                            review.put("review_id", cutomer + "_" + asinSplit[1]);
                             review.put("rating", rating);
                             review.put("n_votes", votes);
                             review.put("review_text", "");
@@ -225,6 +227,7 @@ public class Converter {
     }
 
     public static String Scrape(String asin) throws IOException {
+//        asin = "0486287785";
         URL obj = new URL("https://www.amazon.in/s?k=" + asin + "&ref=hp_aps_search");
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
@@ -247,29 +250,37 @@ public class Converter {
             response.append((char) ch);
         }
 
-        //System.out.println(response);
+//        System.out.println(response); // per debug
 
         String str = response.toString();
         String result = StringUtils.substringBetween(str, "<span class=\"a-size-base\">by </span>", "</div>");
-        System.out.println("risultato primo parsing \n" + result);
+//        System.out.println("risultato primo parsing \n" + result);
 
         if (StringUtils.substringBetween(result, ">", "</a>") != null) {
             if (StringUtils.substringBetween(result, ">", "</a>").contains("<")) {
                 String app[] = StringUtils.substringBetween(result, ">", "</a>").split("<");
                 System.out.println(app[0]);
-                return app[0];
+                String image_url = StringUtils.substringBetween(str, "<img class=\"s-image\" src=\"", "\"");
+//                System.out.println("stamp url..."+image_url);
+                return app[0] + "___" + image_url;
             } else {
+                String image_url = StringUtils.substringBetween(str, "<img class=\"s-image\" src=\"", "\"");
                 System.out.println(StringUtils.substringBetween(result, ">", "</a>"));
-                return StringUtils.substringBetween(result, ">", "</a>");
+//                System.out.println("stamp url..."+image_url);
+                return StringUtils.substringBetween(result, ">", "</a>") + "___" + image_url;
             }
         } else if (StringUtils.substringBetween(result, ">", "</span>") != null) {
             if (StringUtils.substringBetween(result, ">", "</span>").contains("<")) {
                 String app[] = StringUtils.substringBetween(result, ">", "</span>").split("<");
                 System.out.println(app[0]);
-                return app[0];
+                String image_url = StringUtils.substringBetween(str, "<img class=\"s-image\" src=\"", "\"");
+//                System.out.println("stamp url..."+image_url);
+                return app[0] + "___" + image_url;
             } else {
+                String image_url = StringUtils.substringBetween(str, "<img class=\"s-image\" src=\"", "\"");
+//                System.out.println("stamp url..."+image_url);
                 System.out.println(StringUtils.substringBetween(result, ">", "</span>"));
-                return StringUtils.substringBetween(result, ">", "</span>");
+                return StringUtils.substringBetween(result, ">", "</span>") + "___" + image_url;
             }
         } else {
             // ci va un nome generato randomicamente
@@ -277,13 +288,16 @@ public class Converter {
             String name = faker.name().fullName();
             String firstName = faker.name().firstName();
             String lastName = faker.name().lastName();
-            return name + lastName;
+            String image_url = StringUtils.substringBetween(str, "<img class=\"s-image\" src=\"", "\"");
+//            System.out.println("stamp url..."+image_url);
+            return name + lastName + "___" + image_url;
         }
 
     }
 
     public static void main(String[] args) throws IOException {
         Convert();
+//        Scrape("");
     }
 
 
