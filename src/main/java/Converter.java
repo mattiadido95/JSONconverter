@@ -1,21 +1,21 @@
-
-import java.awt.image.Kernel;
 import java.io.*;
 
 import com.github.javafaker.Faker;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.apache.commons.lang3.StringUtils;
-
-import java.net.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 
 public class Converter {
@@ -30,7 +30,7 @@ public class Converter {
                     JSONObject book = new JSONObject();
                     System.out.println(line);
                     int index = allLines.indexOf(line);
-                    if (line.equals("Id:   10000")) {
+                    if (line.equals("Id:   20000")) {
                         break;
                     }
 
@@ -55,10 +55,10 @@ public class Converter {
                     // ASIN
                     String asin = allLines.get(index + 1);
                     String[] asinSplit = asin.split("ASIN: ");
-                    book.put("ASIN", asinSplit[1]);
+                    book.put("asin", asinSplit[1]);
 
                     // ISBN
-                    book.put("ISBN", "");
+                    book.put("isbn", "");
 
                     // LANGUAGE CODE
                     book.put("language_code", "");
@@ -89,8 +89,12 @@ public class Converter {
                     // AUTHOR
                     String a[] = author_imgURL.split("___");
                     JSONArray authors = new JSONArray();
-                    authors.add(a[0]);
-                    book.put("author", authors);
+                    JSONObject newAutore = new JSONObject();
+                    newAutore.put("author_name", (a[0]));
+                    newAutore.put("author_role", "");
+                    newAutore.put("author_id", "");
+                    authors.add(newAutore);
+                    book.put("authors", authors);
 
                     // IMAGE URL
                     book.put("image_url", a[1]);
@@ -171,29 +175,24 @@ public class Converter {
                     JSONArray reviewsList = new JSONArray();
                     if (rev > 0) {
                         for (int i = 1; i <= rev; i++) {
-
                             String reviewExtracted = allLines.get(index + 6 + cat + i + 1);
-                            if(reviewExtracted.contains("cutomer:")) {
+                            if (reviewExtracted.contains("cutomer:")) {
                                 JSONObject review = new JSONObject();
-
                                 String data = StringUtils.substringBetween(reviewExtracted, "", "cutomer").replaceAll(" ", "");
                                 String cutomer = StringUtils.substringBetween(reviewExtracted, "cutomer:", "rating").replaceAll(" ", "");
                                 String rating = StringUtils.substringBetween(reviewExtracted, "rating:", "votes").replaceAll(" ", "");
                                 String votes = StringUtils.substringBetween(reviewExtracted, "votes:", "helpful").replaceAll(" ", "");
-//                            String helpfulSplit[] = reviewExtracted.split("helpful: ");
-
+                                String helpfulSplit[] = reviewExtracted.split("helpful: ");
                                 review.put("date_added", data);
                                 review.put("date_updated", data);
                                 review.put("review_id", cutomer + "_" + asinSplit[1]);
                                 review.put("rating", rating);
                                 review.put("n_votes", votes);
                                 review.put("review_text", "");
-                                review.put("user_id", "");
-                                //review.put("helpful", helpfulSplit[1].replaceAll(" ",""));
-
+                                review.put("user_id", cutomer);
+                                review.put("helpful", helpfulSplit[1].replaceAll(" ", ""));
                                 reviewsList.add(review);
                             }
-
                         }
                         book.put("reviews", reviewsList);
                     } else {
@@ -217,7 +216,6 @@ public class Converter {
 //                        }
 //                    }
 //                    book.put("similar", similarList);
-
 
                     arrayBook.add(book);
                 }
@@ -288,22 +286,79 @@ public class Converter {
                 return StringUtils.substringBetween(result, ">", "</span>") + "___" + image_url;
             }
         } else {
-            // ci va un nome generato randomicamente
+//            // ci va un nome generato randomicamente
             Faker faker = new Faker();
             String name = faker.name().fullName();
             String firstName = faker.name().firstName();
             String lastName = faker.name().lastName();
             String image_url = StringUtils.substringBetween(str, "<img class=\"s-image\" src=\"", "\"");
 //            System.out.println("stamp url..."+image_url);
-            return name + lastName + "___" + image_url;
+//            return name + lastName + "___" + image_url;
+            return "null___null";
         }
 
     }
 
-    public static void main(String[] args) throws IOException {
-        Convert();
+    public static void main(String[] args) throws IOException, ParseException {
+//        Convert();
 //        Scrape("");
-    }
 
+        String file = "../Materiale/BookAmazon.json";
+        String json = new String(Files.readAllBytes(Paths.get(file)));
+        String isbn = json.replaceAll("ISBN", "isbn");
+        String asin = isbn.replaceAll("ASIN", "asin");
+        String last = asin.replaceAll("rating_count","ratings_count");
+       // String last = last2.replaceAll("&","and");
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("../Materiale/test.txt"));
+        writer.write(asin);
+        writer.close();
+
+        JSONParser parser1 = new JSONParser();
+        JSONArray jsonObj = (JSONArray) parser1.parse(last);
+        FileWriter fileJSON = new FileWriter("../Materiale/BookAmazon2.json");
+        fileJSON.write(jsonObj.toJSONString());
+        fileJSON.close();
+
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader("../Materiale/BookAmazon2.json"));
+            JSONArray jsonArray = (JSONArray) obj;
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject o = (JSONObject) jsonArray.get(i);
+                ArrayList<String> autori = (ArrayList<String>) o.get("author");
+                JSONArray newAutori = new JSONArray();
+                for (int j = 0; j < autori.size(); j++) {
+                    JSONObject newAutore = new JSONObject();
+                    newAutore.put("author_name", autori.get(j));
+                    newAutore.put("author_role", "");
+                    String concat = autori.get(j);
+                    String id = UUID.nameUUIDFromBytes(concat.getBytes()).toString();
+                    newAutore.put("author_id",id);
+                    newAutori.add(newAutore);
+                }
+                o.remove("author");
+                o.put("authors", newAutori);
+
+                // insert user_id
+                JSONArray reviewList = (JSONArray) o.get("reviews");
+                for (int k = 0; k < reviewList.size(); k++) {
+                    JSONObject review = (JSONObject) reviewList.get(k);
+                    String review_id = (String) review.get("review_id");
+                    String[] cutomer = review_id.split("_");
+                    review.put("user_id",cutomer[0]);
+                }
+            }
+            FileWriter fileJSON2 = new FileWriter("../Materiale/BookAmazon2.json");
+            fileJSON2.write(jsonArray.toJSONString());
+            fileJSON2.close();
+//            for (int i = 0; i < jsonArray.size(); i++) {
+//                System.out.println(jsonArray.get(i));
+//            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
